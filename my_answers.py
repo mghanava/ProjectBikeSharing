@@ -1,6 +1,5 @@
 import numpy as np
 
-
 class NeuralNetwork(object):
     def __init__(self, input_nodes, hidden_nodes, output_nodes, learning_rate):
         # Set number of nodes in input, hidden and output layers.
@@ -17,7 +16,7 @@ class NeuralNetwork(object):
                                        size=(self.hidden_nodes, self.output_nodes)) # tuple size of weight matrix
         self.lr = learning_rate
               
-        #### TODO: Set self.activation_function to your implemented sigmoid function ####
+        #### Set self.activation_function to the implemented sigmoid function ####
         
         self.activation_function = lambda x : 1/(1+np.exp(-x)) 
                     
@@ -55,12 +54,12 @@ class NeuralNetwork(object):
         '''
         #### Implement the forward pass here ####
         ### Forward pass ###
-        # TODO: Hidden layer - Replace these values with your calculations.
-        hidden_inputs = np.dot(X[None, :], self.weights_input_to_hidden) # signals into hidden layer
+        # Hidden layer 
+        hidden_inputs = np.matmul(X[None, :], self.weights_input_to_hidden) # signals into hidden layer
         hidden_outputs = self.activation_function(hidden_inputs)  # signals from hidden layer
 
-        # TODO: Output layer - Replace these values with your calculations.
-        final_inputs = np.dot(hidden_outputs, self.weights_hidden_to_output) # signals into final output layer
+        # Output layer
+        final_inputs = np.matmul(hidden_outputs, self.weights_hidden_to_output) # signals into final output layer
         # Despite hidden layer, sigmoid activation function is replaced with activation function of f(x)=x as we are not trying to get a probablity but a real number (count of rides). So in this case the final output will be equal to final input.
         final_outputs = final_inputs # signals from final output layer
         
@@ -80,22 +79,22 @@ class NeuralNetwork(object):
         #### Implement the backward pass here ####
         ### Backward pass ###
 
-        # TODO: Output error - Replace this value with your calculations.
+        # Output error 
         
         error = y - final_outputs # Output layer error is the difference between desired target and actual output.
         
-        # TODO: Backpropagated error terms - Replace these values with your calculations.
+        # Backpropagated error terms
         
         output_error_term = error * 1 # Since we have sigmoid(x) = x at output layer; derivative is 1
         
-        # TODO: Calculate the hidden layer's contribution to the error
+        # Calculate the hidden layer's contribution to the error
          
         hidden_error = error * self.weights_hidden_to_output
         # derivative of hidden layer activation function ddxσ(x)=σ(x)(1−σ(x)) 
         hidden_error_term = hidden_error.T * (hidden_outputs * (1.0 - hidden_outputs))
         
         # Weight step (input to hidden)
-        delta_weights_i_h += np.dot(X[:, None], hidden_error_term)
+        delta_weights_i_h += np.matmul(X[:, None], hidden_error_term)
         # Weight step (hidden to output)
         delta_weights_h_o += output_error_term * hidden_outputs.T
 
@@ -116,6 +115,8 @@ class NeuralNetwork(object):
         # update input-to-hidden weights with gradient descent step
         self.weights_input_to_hidden += self.lr / n_records * delta_weights_i_h  
 
+    # Once model is initialized and trained through the previous 5 functions, its parameters are ready to use in the run function.
+    # Take important note that the run function returns just final_outputs that is required to calculate MSE.  
     def run(self, features):
         ''' Run a forward pass through the network with input features 
         
@@ -125,14 +126,14 @@ class NeuralNetwork(object):
         '''
         
         #### Implement the forward pass here ####
-        # TODO: Hidden layer - replace these values with the appropriate calculations.
+        # Hidden layer
         
-        hidden_inputs = np.dot(features, self.weights_input_to_hidden)
+        hidden_inputs = np.matmul(features, self.weights_input_to_hidden)
         hidden_outputs = self.activation_function(hidden_inputs)  # signals from hidden layer
         
-        # TODO: Output layer - Replace these values with the appropriate calculations.
+        # Output layer 
         
-        final_inputs = np.dot(hidden_outputs, self.weights_hidden_to_output) # signals into final output layer
+        final_inputs = np.matmul(hidden_outputs, self.weights_hidden_to_output) # signals into final output layer
         final_outputs = final_inputs # signals from final output layer
         
         return final_outputs
